@@ -11,7 +11,7 @@ You can use this library to get the text of any user's Tweets trivially.
 ## Installation
 
 ```shell
-go get -u github.com/n0madic/twitter-scraper
+go get -u github.com/ihsanturk/twitter-scraper
 ```
 
 ## Usage
@@ -24,7 +24,7 @@ package main
 import (
     "context"
     "fmt"
-    twitterscraper "github.com/n0madic/twitter-scraper"
+    twitterscraper "github.com/ihsanturk/twitter-scraper"
 )
 
 func main() {
@@ -49,7 +49,7 @@ package main
 import (
     "context"
     "fmt"
-    twitterscraper "github.com/n0madic/twitter-scraper"
+    twitterscraper "github.com/ihsanturk/twitter-scraper"
 )
 
 func main() {
@@ -74,7 +74,7 @@ package main
 
 import (
     "fmt"
-    twitterscraper "github.com/n0madic/twitter-scraper"
+    twitterscraper "github.com/ihsanturk/twitter-scraper"
 )
 
 func main() {
@@ -93,7 +93,7 @@ package main
 
 import (
     "fmt"
-    twitterscraper "github.com/n0madic/twitter-scraper"
+    twitterscraper "github.com/ihsanturk/twitter-scraper"
 )
 
 func main() {
