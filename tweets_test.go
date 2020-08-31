@@ -1,7 +1,9 @@
 package twitterscraper
 
 import (
+	"strconv"
 	"context"
+	"encoding/json"
 	"testing"
 )
 
@@ -13,6 +15,17 @@ func TestGetTweets(t *testing.T) {
 			t.Error(tweet.Error)
 		} else {
 			count++
+
+			jsonData, err := json.Marshal(&tweet)
+			if err != nil { t.Error(err); }
+			var jsonBlob = []byte(jsonData)
+			var unmarshaled Tweet
+			err = json.Unmarshal(jsonBlob, &unmarshaled)
+			if err != nil { t.Error(err); }
+			if _, err := strconv.Atoi(unmarshaled.ID); err != nil {
+				t.Error("Expected unmarshaled.ID as a int not string\n")
+			}
+
 			if tweet.HTML == "" {
 				t.Error("Expected tweet HTML is not empty")
 			}

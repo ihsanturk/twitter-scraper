@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"encoding/json"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -23,7 +24,7 @@ type Video struct {
 type Tweet struct {
 	Hashtags     []string  `json:"hashtags"`
 	HTML         string    `json:"html"`
-	ID           string    `json:"_id,int"`
+	ID           string    `json:"_id"`
 	IsPin        bool      `json:"isPinned"`
 	IsRetweet    bool      `json:"isRetweet"`
 	Likes        int       `json:"likes"`
@@ -40,6 +41,36 @@ type Tweet struct {
 	UserID       string    `json:"userId"`
 	Username     string    `json:"username"`
 	Videos       []Video   `json:"videos"`
+}
+
+func (t *Tweet) MarshalJSON() ([]byte, error) {
+	type Alias Tweet
+	id, err := strconv.ParseInt(t.ID, 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	return json.Marshal(&struct {
+		ID int64 `json:"_id"`
+		*Alias
+	}{
+		ID: id,
+		Alias: (*Alias)(t),
+	})
+}
+
+func (t *Tweet) UnmarshalJSON(data []byte) error {
+	type Alias Tweet
+	aux := &struct {
+		ID int `json:"_id"`
+		*Alias
+	}{
+		Alias: (*Alias)(t),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	t.ID = strconv.Itoa(aux.ID)
+	return nil
 }
 
 // Result of scrapping.
