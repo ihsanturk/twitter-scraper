@@ -21,23 +21,25 @@ type Video struct {
 
 // Tweet type.
 type Tweet struct {
-	Hashtags     []string
-	HTML         string
-	ID           string
-	IsPin        bool
-	IsRetweet    bool
-	Likes        int
-	PermanentURL string
-	Photos       []string
-	Replies      int
-	Retweets     int
-	Text         string
-	TimeParsed   time.Time
-	Timestamp    int64
-	URLs         []string
-	UserID       string
-	Username     string
-	Videos       []Video
+	Hashtags     []string  `json:"hashtags"`
+	HTML         string    `json:"html"`
+	ID           string    `json:"_id,int"`
+	IsPin        bool      `json:"isPinned"`
+	IsRetweet    bool      `json:"isRetweet"`
+	Likes        int       `json:"likes"`
+	PermanentURL string    `json:"tweetUrl"`
+	Photos       []string  `json:"photos"`
+	Replies      int       `json:"replies"`
+	Retweets     int       `json:"retweets"`
+	Text         string    `json:"text"`
+	TimeParsed   time.Time `json:"time"`
+	TimeCaptured time.Time `json:"capture_time"`
+	CaptureDelay float64   `json:"capture_delay_sec"`
+	Timestamp    int64     `json:"timestamp"`
+	URLs         []string  `json:"urls"`
+	UserID       string    `json:"userId"`
+	Username     string    `json:"username"`
+	Videos       []Video   `json:"videos"`
 }
 
 // Result of scrapping.
@@ -133,12 +135,14 @@ func readTweetsFromHTML(htm *strings.Reader) ([]*Tweet, error) {
 		var tweet Tweet
 		timeStr, ok := s.Find(".timeline-Tweet-metadata > a > time").Attr("datetime")
 		if ok {
-			tweet.TimeParsed, _ = time.Parse("2006-01-02T15:04:05-0700", timeStr)
-			tweet.Timestamp = tweet.TimeParsed.Unix()
+			tweet.Timestamp, _ = strconv.ParseInt(timeStr, 10, 64)
+			tweet.TimeParsed = time.Unix(tweet.Timestamp, 0).UTC()//.Format(time.RFC3339)
+			tweet.TimeCaptured = time.Now().UTC()//.Format(time.RFC3339)
+			tweet.CaptureDelay = tweet.TimeCaptured.Sub(tweet.TimeParsed).Seconds()
 			tweet.ID = s.AttrOr("data-tweet-id", "")
 			// tweet.UserID = s.Find(".tweet").AttrOr("data-user-id", "")
 			tweet.Username = strings.TrimPrefix(s.Find(".TweetAuthor-screenName").AttrOr("title", ""), "@")
-			tweet.PermanentURL = fmt.Sprintf("https://twitter.com/%s/status/%s", tweet.Username, tweet.ID)
+			tweet.PermanentURL = fmt.Sprintf("/%s/status/%s", tweet.Username, tweet.ID)
 			tweet.Text = s.Find(".timeline-Tweet-text").Text()
 			tweet.HTML, _ = s.Find(".timeline-Tweet-text").Html()
 			s.Find(".timeline-Tweet-retweetCredit").Each(func(i int, c *goquery.Selection) {
