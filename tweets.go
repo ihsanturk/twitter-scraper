@@ -164,10 +164,10 @@ func readTweetsFromHTML(htm *strings.Reader) ([]*Tweet, error) {
 
 	doc.Find(".timeline-Tweet").Each(func(i int, s *goquery.Selection) {
 		var tweet Tweet
-		timeStr, ok := s.Find(".timeline-Tweet-metadata > a > time").Attr("datetime")
+		timeStr, ok := s.Find(".timeline-Tweet-metadata > a > time").Attr("datetime") //=> 2020-08-31T21:48:01+0000
 		if ok {
-			tweet.Timestamp, _ = strconv.ParseInt(timeStr, 10, 64)
-			tweet.TimeParsed = time.Unix(tweet.Timestamp, 0).UTC()//.Format(time.RFC3339)
+			tweet.TimeParsed, _ = time.Parse("2006-01-02T15:04:05-0700", timeStr)
+			tweet.Timestamp = tweet.TimeParsed.Unix()//.UTC()//.Format(time.RFC3339) // int64
 			tweet.TimeCaptured = time.Now().UTC()//.Format(time.RFC3339)
 			tweet.CaptureDelay = tweet.TimeCaptured.Sub(tweet.TimeParsed).Seconds()
 			tweet.ID = s.AttrOr("data-tweet-id", "")
