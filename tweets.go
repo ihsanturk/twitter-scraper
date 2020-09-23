@@ -2,12 +2,12 @@ package twitterscraper
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
-	"encoding/json"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -53,7 +53,7 @@ func (t *Tweet) MarshalJSON() ([]byte, error) {
 		ID int64 `json:"_id"`
 		*Alias
 	}{
-		ID: id,
+		ID:    id,
 		Alias: (*Alias)(t),
 	})
 }
@@ -167,8 +167,8 @@ func readTweetsFromHTML(htm *strings.Reader) ([]*Tweet, error) {
 		timeStr, ok := s.Find(".timeline-Tweet-metadata > a > time").Attr("datetime") //=> 2020-08-31T21:48:01+0000
 		if ok {
 			tweet.TimeParsed, _ = time.Parse("2006-01-02T15:04:05-0700", timeStr)
-			tweet.Timestamp = tweet.TimeParsed.Unix()//.UTC()//.Format(time.RFC3339) // int64
-			tweet.TimeCaptured = time.Now().UTC()//.Format(time.RFC3339)
+			tweet.Timestamp = tweet.TimeParsed.Unix() //.UTC()//.Format(time.RFC3339) // int64
+			tweet.TimeCaptured = time.Now().UTC()     //.Format(time.RFC3339)
 			tweet.CaptureDelay = tweet.TimeCaptured.Sub(tweet.TimeParsed).Seconds()
 			tweet.ID = s.AttrOr("data-tweet-id", "")
 			// tweet.UserID = s.Find(".tweet").AttrOr("data-user-id", "")
