@@ -166,10 +166,10 @@ func readTweetsFromHTML(htm *strings.Reader) ([]*Tweet, error) {
 		var tweet Tweet
 		timeStr, ok := s.Find(".timeline-Tweet-metadata > a > time").Attr("datetime") //=> 2020-08-31T21:48:01+0000
 		if ok {
-			tweet.TimeParsed, _ = time.Parse("2006-01-02T15:04:05-0700", timeStr)
-			tweet.Timestamp = tweet.TimeParsed.Unix() //.UTC()//.Format(time.RFC3339) // int64
-			tweet.TimeCaptured = time.Now().UTC()     //.Format(time.RFC3339)
-			tweet.CaptureDelay = tweet.TimeCaptured.Sub(tweet.TimeParsed).Seconds()
+			tweet.TimeParsed, _ = time.Parse("2006-01-02T15:04:05-0700", timeStr) //=> 2020-09-21 17:14:24 +0000 +0000
+			tweet.Timestamp = tweet.TimeParsed.Unix() //.UTC()//.Format(time.RFC3339) // int64 //=> 1600708464
+			tweet.TimeCaptured = time.Now().UTC()     //.Format(time.RFC3339) //=> 2020-10-01 20:03:53.305831383 +0000 UTC
+			tweet.CaptureDelay = tweet.TimeCaptured.Sub(tweet.TimeParsed).Seconds() //=> 874236.104474753
 			tweet.ID = s.AttrOr("data-tweet-id", "")
 			// tweet.UserID = s.Find(".tweet").AttrOr("data-user-id", "")
 			tweet.Username = strings.TrimPrefix(s.Find(".TweetAuthor-screenName").AttrOr("title", ""), "@")
