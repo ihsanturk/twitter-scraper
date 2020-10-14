@@ -1,18 +1,17 @@
-with import <nixpkgs> {}; {
-	devEnv = stdenv.mkDerivation {
-		name = "dev";
-		buildInputs = [
-			go
-			stdenv
-			glibc.static
-		];
+with import <nixpkgs> {};
 
-		CFLAGS="-I${pkgs.glibc.dev}/include";
-		LDFLAGS="-L${pkgs.glibc}/lib";
+(
+	let ihsan-twitter = pkgs.callPackage ./default.nix {
 
-		shellHook = ''
-			export GOPATH=$HOME/go
-		'';
+		pkgs = pkgs;
+		docopt = pkgs.python38Packages.docopt;
+		selenium = pkgs.python38Packages.selenium;
+		buildPythonPackage = pkgs.python38Packages.buildPythonPackage;
 
 	};
-}
+
+	in pkgs.python38.buildEnv.override rec {
+		extraLibs = [ ihsan-twitter ];
+	}
+
+).env
